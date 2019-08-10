@@ -1,0 +1,22 @@
+<p>
+  <strong>Title:</strong>
+  <%= @document.title %>
+</p>
+
+<p>
+  <strong>Download path:</strong>
+  <%= @document.download_path %>
+</p>
+
+<p>
+  <strong>Source path:</strong>
+  <%= @document.source_path %>
+</p>
+
+<p>
+  <strong>Profile:</strong>
+  <%= @document.profile.name %>
+</p>
+
+<%= link_to 'Edit', edit_document_path(@document) %> |
+<%= link_to 'Back', documents_path %>

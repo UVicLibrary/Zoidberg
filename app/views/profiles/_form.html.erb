@@ -1,0 +1,34 @@
+<!-- Used in profiles/new and profiles/edit -->
+<%= form_with(model: @profile, local: true, class: "justify-content-center col-lg-6 offset-lg-3") do |form| %>
+  <% if @profile.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@profile.errors.count, "error") %> prohibited this profile from being saved:</h2>
+
+      <ul>
+      <% @profile.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label_tag(:name, "Name", class: "mr-sm-4 font-weight-bold") %>
+    <%= form.text_field :name, class: "form-control col-md-5", placeholder: "Enter username", id: "name" %>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag(:name, "Sound", class: "mr-sm-4 font-weight-bold") %>
+    <% if @profile.sound.present? %><%# profiles#edit %>
+      <span><%= File.basename(@profile.sound.url) %></span>
+    <% end %>
+    <%= form.file_field :sound, class: "form-control-file", id: "profile-sound" %>
+    <small class="form-text text-muted mb-sm-4">
+        This sound plays when your document is ready.
+    </small>
+  </div>
+
+  <div class="col-md-12 text-center btn-row">
+    <%= form.submit 'Create Profile', class: "btn btn-primary" %>
+  </div>
+<% end %>

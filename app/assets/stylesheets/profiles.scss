@@ -1,0 +1,24 @@
+// Place all the styles related to the Users controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+
+// #index
+
+.profile-index-header {
+  margin-bottom: 4% !important;
+}
+
+.light-grey-border {
+  border: 1px solid #dee2e6;
+}
+
+.no-border {
+  border: none;
+}
+
+// #edit, #show
+
+.link-options-wrapper {
+  font-size: large;
+  text-align: center;
+}

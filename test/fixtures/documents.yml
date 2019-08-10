@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyText
+  download_path: MyText
+  source_path: MyText
+  thumbnail_path: MyText
+  profile: one
+
+two:
+  title: MyText
+  download_path: MyText
+  source_path: MyText
+  thumbnail_path: MyText
+  profile: two

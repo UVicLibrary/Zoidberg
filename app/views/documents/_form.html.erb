@@ -1,0 +1,30 @@
+<%= form_with(model: @document, local: true, class: "justify-content-center col-lg-6 offset-lg-3") do |form| %>
+  <% if @document.errors.any? %>
+    <div id="error_explanation alert alert-primary">
+      <p><%= pluralize(@document.errors.count, "error") %> prohibited this document from being saved:</p>
+      <ul>
+      <% @document.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label_tag(:title, "Title", class: "mr-sm-4 font-weight-bold") %>
+    <%= form.text_field :title, class: "form-control col-md-6", placeholder: "Enter document title", id: "title" %>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag(:source_path, "Folder", class: "mr-sm-4 font-weight-bold") %>
+    <p>Zoidberg will make a PDF of all the .tifs in this folder. <a href="#" class="text-info">How to get a file path quickly?</a></p>
+    <%= form.text_field :source_path, class: "form-control col-md-11", placeholder: "File path to folder (Q:)", id: "source-path" %>
+    <small class="form-text text-muted mb-sm-4">
+        Zoidberg will use only .tif files and ignore other file extensions.
+    </small>
+  </div>
+
+  <div class="col-md-12 text-center btn-row">
+    <%= form.submit 'Create Document', class: "btn btn-primary" %>
+  </div>
+<% end %>

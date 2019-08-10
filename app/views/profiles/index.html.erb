@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="text-center profile-index-header">Select a Profile</h1>
+    </div>
+  </div>
+</div>
+
+<!-- Template from startbootstrap.com/snippets/thumbnail-gallery -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="row text-center text-lg-left col-lg-10">
+      <% @profiles.each do |profile| %>
+          <div class="col-lg-3 col-md-4 col-6">
+            <%= link_to(profile, class: "d-block mb-4 text-dark light-grey-border") do %>
+              <%= image_tag("zoidberg_green.png", class: "img-fluid img-thumbnail no-border") %>
+              <!-- <img class="img-fluid img-thumbnail" src="https://source.unsplash.com/pWkk7iiCoDM" alt=""> -->
+              <h3 class="text-center"><%= profile.name %></h3>
+            <% end %>
+          </div>
+      <% end %>
+  </div>
+</div>
+  <!-- <h1 class="text-center">Zoidberg</h1>
+  <p class="text-center">Turns a folder of TIFFs into a web-ready PDF</p>
+  <h4 class="text-center" >Choose a Profile</h4>
+  <h4 class="text-center">Choose a Folder</h4> -->
