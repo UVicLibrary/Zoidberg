@@ -32,6 +32,7 @@ class DocumentsController < ApplicationController
   # POST /documents.json
   def create
     @document = Document.new(document_params)
+    byebug
     if params[:document][:title].present?
       if @document.title.include?(".pdf")
         @document.title = File.basename(params[:document][:title],".pdf")
@@ -43,17 +44,18 @@ class DocumentsController < ApplicationController
     end
     # To Do: set profile ID based on the current session
     @document.profile_id = 5
-    @document.source_path = params[:document][:source_path]
     # Pull from the mounted Q:Drive
     source_folder = @document.source_path.gsub("\\","/").gsub('Q:','/mnt/qdrive')
-    # For writing to file
-    download_path = "/home/tjychan/zoidberg/pdfs/#{snake_case(@document.title)}.pdf"
     # For displaying download to user
-    @document.download_path = download_path
+    @document.download_path = "/pdfs/#{@document.title.parameterize.underscore}/#{@document.title}.pdf" # /mnt/qdrive/LSYS/vol02/Testing/PDF/"
+
 
     respond_to do |format|
       if @document.save
-        format.html { redirect_to @document, notice: 'Document was successfully created.' }
+        format.html {
+          redirect_to @document, notice: "Zoidberg is processing your files in the background and will email you when the PDF is done."
+          CreatePdfJob.perform_later(@document.title, source_folder)
+        }
         format.json { render :show, status: :created, location: @document }
       else
         format.html { render :new }
@@ -61,7 +63,6 @@ class DocumentsController < ApplicationController
       end
     end
 
-    CreatePdfJob.perform_later(@document.title, source_folder)
 
   end
 
@@ -167,6 +168,6 @@ class DocumentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def document_params
-      params.require(:document).permit(:title, :download_path, :source_path, :profile_id, :thumbnail)
+      params.require(:document).permit(:title, :download_path, :source_path, :email)
     end
 end

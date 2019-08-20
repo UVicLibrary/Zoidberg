@@ -3,12 +3,11 @@ class CreatePdfJob < ApplicationJob
 
 
   # title is a string with the document name
-  # source_folder is a path to
+  # source_folder is a path to folder on Q:Drive
   def perform(title, source_folder)
-    # For writing to file
-    # download_path = "/home/tjychan/zoidberg/public/uploads/documents/#{@document.profile_id}/#{snake_case(@document.title)}.pdf"
     # Check for duplicate folder name?
     working_dir = FileUtils.mkdir_p("/home/tjychan/zoidberg/working/#{snake_case(source_folder.split('/').last)}").first
+    dest_file = Rails.root.join("public", "pdfs", "#{snake_case(title)}", "#{title}.pdf" )  # "/mnt/qdrive/LSYS/vol02/Testing/PDF/""
 
     Dir.foreach(source_folder) do |src_file|
       next if src_file == '.' or src_file == '..' # Dir.foreach includes these "file names" but we don't want them
@@ -21,13 +20,13 @@ class CreatePdfJob < ApplicationJob
     end
 
     jpgs_to_pdf(title, working_dir)
-    combined_pdf = "/home/tjychan/zoidberg/pdfs/combined.pdf"
+    combined_pdf = "#{working_dir}/combined.pdf"
     # Linearize pdf and make it web-ready
-    `qpdf #{combined_pdf} --linearize /home/tjychan/zoidberg/pdfs/#{title}.pdf`
+    `qpdf #{combined_pdf} --linearize #{dest_file}`
     # Delete the working pdf document
-    File.delete(combined_pdf)
+    FileUtils.rm_rf(working_dir)
     puts "#{title}.pdf is ready"
-    PdfCreatedMailer.with(title: title, )
+    #PdfCreatedMailer.with(title: title, )
   end
 
   def snake_case(filename)
@@ -80,10 +79,9 @@ class CreatePdfJob < ApplicationJob
       page = doc.pages.add([0, 0, width, height])
       page.canvas.image(image, at: [0,0], width: width, height: height)
     end
-    doc.write("/home/tjychan/zoidberg/pdfs/combined.pdf") #optimize: true by default
+    doc.write("#{working_dir}/combined.pdf") #optimize: true by default
     save_thumbnail(title, jpg_array.first)
     # cleanup jpgs
-    FileUtils.rm_rf(working_dir)
     # jpg_array.each do |jpg|
     #   File.delete(jpg)
     # end
@@ -91,9 +89,9 @@ class CreatePdfJob < ApplicationJob
 
   def save_thumbnail(title, first_jpg)
     thumbnail = MiniMagick::Image.open(first_jpg).resize "400x400"
-    dest_dir = "/home/tjychan/zoidberg/pdfs"# dest_dir = "/home/tjychan/zoidberg/public/uploads/documents/#{profile_id}"
-    unless File.directory?(dest_dir) # Create a dir if it doesn't already exist
-      FileUtils.mkdir_p(dest_dir)
+    dest_dir = Rails.root.join("public", "pdfs", "#{snake_case(title)}") # "/mnt/qdrive/LSYS/vol02/Testing/PDF/"
+    unless File.directory?(dest_dir)
+      dest_dir.mkdir
     end
     path_to_thumb = "#{dest_dir}/#{title}_thumb.jpg"
     thumbnail.write path_to_thumb

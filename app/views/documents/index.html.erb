@@ -12,15 +12,19 @@
     <div class="row text-lg-left col-lg-10">
     <% if @documents.present? %>
       <% @documents.each do |document| %>
+      <div class="card" style="width: 18rem; background: url(<%= document.thumbnail_url %>); background-repeat: no-repeat; background-size: cover;">
+        <div class="card-body" style="margin-top: 80%; background-color: white;">
+          <h5 class="card-title">Card title</h5>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+
           <div class="col-lg-3 col-md-4 col-6 mb-4 text-center"><!-- text-align: center -->
             <%= link_to(document, class: "d-block mb-4 text-dark light-grey-border") do %>
               <img height="200px" src="<%= document.thumbnail_url %>" />
               <h4><%= document.title %></h4>
             <% end %>
-            <button class="btn btn-primary">
-              <%= link_to "Download", document.download_url %>
-            </button>
-            <!-- <a href="#"><button class="btn btn-primary">Download</button></a> -->
+            <%= link_to "Download", document.download_path, class: "btn btn-success ml-sm-3 mt-sm-4" %>
           </div>
       <% end %>
     <% else %>

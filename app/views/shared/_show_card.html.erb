@@ -1,7 +1,11 @@
-<div class="col-lg-3 col-md-4 col-6 mb-4">
   <% if @profile %>
+  <div class="col-lg-3 col-md-4 col-6 mb-4">
     <%= image_tag("zoidberg_green.png", class: "img-fluid img-thumbnail no-border") %>
+  </div>
   <% else %> <%# @document %>
-    <img class="doc-thumbnail img-fluid img-thumbnail no-border" src="<%= @document.thumbnail_url %>"> <!-- See models/document.rb -->
+    <% if @document.completed? %>
+      <img class="doc-thumbnail img-fluid img-thumbnail no-border" src="<%= @document.thumbnail_url %>"> <!-- See models/document.rb -->
+    <% else %>
+      <%= image_tag("zoidberg.png", class: "img-fluid img-thumbnail no-border") %>
+    <% end %>
   <% end %>
-</div>

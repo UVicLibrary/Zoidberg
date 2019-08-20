@@ -1,26 +1,37 @@
 <div class="container">
-  <div class="row">
+  <div class="row justify-content-center">
     <div class="col-lg-12">
       <h1 class="text-center"><%= @document.title %></h1>
+      <% if @document.completed? %>
       <div class='link-options-wrapper mb-sm-5'>
         <%= link_to('Edit document title', edit_document_path(@document), class: "mr-sm-2") %> |
         <%= link_to('See all documents', documents_path, class: "ml-sm-2") %>
       </div>
+      <% else %>
+      <div class="col-md-4 text-center offset-md-4">
+        <span class="badge badge-pill badge-warning large-progress-badge">PDF in progress</span>
+      </div>
+      <% end %>
     </div>
   </div>
-  <div class="row justify-content-center">
-      <%= render 'shared/show_card' %>
+  <div class="row">
+  <div class="col-md-4 offset-md-2">
+    <dl>
+      <dt class="col-sm-3 mr-sm-2 mb-sm-1">Uploader</dt><dd class="col-sm-9"><%= @document.email %></dd>
+      <dt class="col-sm-5 mr-sm-2 mb-sm-1">Source folder</dt><dd class="col-sm-9"><%= @document.source_path %></dd>
+        <dt class="col-sm-8 mr-sm-2 mb-sm-1">Download permalink</dt>
+    <% if @document.completed? %>
+        <dd class="col-sm-9"><%= link_to "#{@document.permalink}", @document.download_path %></dd>
+        <%= link_to "Download", @document.download_path, class: "btn btn-success ml-sm-3 mt-sm-4" %>
+    <% else %>
+        <dd class="col-sm-9 text-muted mb-sm-4">Unavailable</dd>
+    <% end %>
+      </dl>
+    <% unless @document.completed? %>
+      <p class="ml-sm-3">This document isn't ready yet. Please check back later. If you're the uploader, you'll recieve an email when it's done.</p>
+    <% end %>
   </div>
-  <dl class="row justify-content-center"> <!-- justify-content-center -->
-    <div class="col-md-6">
-      <div class="col-sm-3">
-        <%= link_to "Download", @document.download_url, class: "btn btn-primary" %>
-      </div>
-    <dt class="col-sm-3 mr-sm-2 mb-sm-2">Uploader</dt><dd class="col-sm-9"><%= @document.profile.name %></dd>
-    <dt class="col-sm-3 mr-sm-2 mb-sm-2">Source folder</dt><dd class="col-sm-9"><%= @document.source_path %></dd>
-
-    <!-- <a href="<%#= @document.download_url %>">
-      <button type="button" class="btn btn-primary">Download</button>
-    </a> -->
-  </dl>
+  <div class="col-md-4">
+  <%= render 'shared/show_card' %>
+  </div>
 </div>
