@@ -2,8 +2,7 @@
 <%= form_with(model: @profile, local: true, class: "justify-content-center col-lg-6 offset-lg-3") do |form| %>
   <% if @profile.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@profile.errors.count, "error") %> prohibited this profile from being saved:</h2>
-
+      <p><%= pluralize(@profile.errors.count, "error") %> prohibited this profile from being saved:</p>
       <ul>
       <% @profile.errors.full_messages.each do |message| %>
         <li><%= message %></li>

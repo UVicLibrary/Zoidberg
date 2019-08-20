@@ -1,0 +1,7 @@
+<div class="col-lg-3 col-md-4 col-6 mb-4">
+  <% if @profile %>
+    <%= image_tag("zoidberg_green.png", class: "img-fluid img-thumbnail no-border") %>
+  <% else %> <%# @document %>
+    <img class="doc-thumbnail img-fluid img-thumbnail no-border" src="<%= @document.thumbnail_url %>"> <!-- See models/document.rb -->
+  <% end %>
+</div>

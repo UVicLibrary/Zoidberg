@@ -9,15 +9,11 @@
     </div>
   </div>
   <div class="row justify-content-center">
-      <div class="col-lg-3 col-md-4 col-6">
-        <%= link_to("#", class: "d-block mb-4 light-grey-border", disabled: true) do %>
-          <%= image_tag("zoidberg_green.png", class: "img-fluid img-thumbnail no-border") %>
-        <% end %>
-      </div>
+    <%= render "shared/show_card" %>
   </div>
   <% if @profile.sound.present? %>
   <div class="row justify-content-center">
-    <span class="font-weight-bold mr-sm-2 mb-sm-2">Sound:</span><span><%= File.basename(@profile.sound.url) %></span>
+    <dt class="font-weight-bold mr-sm-2 mb-sm-2">Sound:</dt><dl><%= File.basename(@profile.sound.url) %></dl>
   </div>
   <div class="row justify-content-center">
     <audio controls>

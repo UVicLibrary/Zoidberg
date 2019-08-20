@@ -17,10 +17,18 @@
 
   <div class="form-group">
     <%= label_tag(:source_path, "Folder", class: "mr-sm-4 font-weight-bold") %>
-    <p>Zoidberg will make a PDF of all the .tifs in this folder. <a href="#" class="text-info">How to get a file path quickly?</a></p>
+    <p>Zoidberg will make a PDF of all the .tifs in this folder. <a href="#" class="text-info">How to get a file path without typing?</a></p>
     <%= form.text_field :source_path, class: "form-control col-md-11", placeholder: "File path to folder (Q:)", id: "source-path" %>
     <small class="form-text text-muted mb-sm-4">
         Zoidberg will use only .tif files and ignore other file extensions.
+    </small>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email address</label>
+    <input type="email" class="form-control col-md-6" placeholder="Enter email"</input>
+    <small class="form-text text-muted mb-sm-4">
+      Zoidberg will email this address when the PDF is ready.
     </small>
   </div>
 
