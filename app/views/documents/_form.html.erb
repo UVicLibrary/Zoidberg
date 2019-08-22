@@ -1,6 +1,6 @@
 <%= form_with(model: @document, local: true, class: "justify-content-center col-lg-6 offset-lg-3") do |form| %>
   <% if @document.errors.any? %>
-    <div id="error_explanation alert alert-primary">
+    <div id="error_explanation" class="alert alert-danger">
       <p><%= pluralize(@document.errors.count, "error") %> prohibited this document from being saved:</p>
       <ul>
       <% @document.errors.full_messages.each do |message| %>
@@ -35,6 +35,6 @@
   </div>
 
   <div class="col-md-12 text-center btn-row">
-    <%= form.submit 'Create Document', class: "btn btn-primary" %>
+    <%= form.submit 'Create Document', class: "btn btn-primary", id: "create-document-button" %>
   </div>
 <% end %>

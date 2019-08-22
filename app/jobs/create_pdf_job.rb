@@ -4,7 +4,7 @@ class CreatePdfJob < ApplicationJob
 
   # title is a string with the document name
   # source_folder is a path to folder on Q:Drive
-  def perform(title, source_folder)
+  def perform(title, source_folder, document_id)
     # Check for duplicate folder name?
     working_dir = FileUtils.mkdir_p("/home/tjychan/zoidberg/working/#{snake_case(source_folder.split('/').last)}").first
     dest_file = Rails.root.join("public", "pdfs", "#{snake_case(title)}", "#{title}.pdf" )  # "/mnt/qdrive/LSYS/vol02/Testing/PDF/""
@@ -26,7 +26,11 @@ class CreatePdfJob < ApplicationJob
     # Delete the working pdf document
     FileUtils.rm_rf(working_dir)
     puts "#{title}.pdf is ready"
-    #PdfCreatedMailer.with(title: title, )
+    # Change document to completed
+    document = Document.find(document_id)
+    document.completed = true
+    document.save
+    PdfCreatedMailer.with(host: ENV['BASE_URL'], document: document).pdf_ready.deliver
   end
 
   def snake_case(filename)

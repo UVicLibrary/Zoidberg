@@ -2,13 +2,17 @@
 <html>
   <head>
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style>
+      body {
+        font-family: Calibri
+      }
+    </style>
   </head>
   <body>
     <p>Hello,</p>
 
-    <p>Your PDF, <%= @document.title %> is ready.</p>
+    <p>Your PDF, <%= link_to @document.title, @url %> is now <%= @visibility %> is ready.</p>
 
-    <p>Best wishes,<p>
-    <p>Zoidberg</p>
+    <em>Hooray, I'm useful!</em> &mdash; Zoidberg
   </body>
 </html>

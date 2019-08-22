@@ -1,12 +1,11 @@
 class PdfCreatedMailer < ApplicationMailer
 
-  def pdf_created_email
-    @email = params[:email]
-    @document = Document.find(params[:id])
-    host = params[:account_host]
+  def pdf_ready
+    @document = params[:document]
+    @host = params[:account_host]
+    @url = "#{ENV['BASE_URL']}/documents/#{@document.id}"
 
-    # Send email
-    mail(to: @email, subject: "#{@document.title} is Ready")
+    mail(to: @document.email, subject: "#{@document.title.titleize} is Ready")
   end
 
 end

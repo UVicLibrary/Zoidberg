@@ -16,7 +16,8 @@ class DocumentsController < ApplicationController
   # GET /documents/1
   # GET /documents/1.json
   def show
-
+    # flash[:success] = "This is a test"
+    # flash[:warning] = ["String 1", "String 2"].join('<br/>').html_safe
   end
 
   # GET /documents/new
@@ -31,13 +32,18 @@ class DocumentsController < ApplicationController
   # POST /documents
   # POST /documents.json
   def create
+    warnings_list = []
     @document = Document.new(document_params)
-    byebug
     if params[:document][:title].present?
       if @document.title.include?(".pdf")
         @document.title = File.basename(params[:document][:title],".pdf")
       else
         @document.title = params[:document][:title]
+      end
+      if @document.title.include?(" ")
+        spaces_warning = "There are spaces in the title. They will be converted to underscores in the file name. Continuing..."
+        puts spaces_warning
+        warnings_list.push(spaces_warning)
       end
     else
       @document.title = File.basename(params[:document][:original_filename], '.tif')
@@ -47,14 +53,48 @@ class DocumentsController < ApplicationController
     # Pull from the mounted Q:Drive
     source_folder = @document.source_path.gsub("\\","/").gsub('Q:','/mnt/qdrive')
     # For displaying download to user
-    @document.download_path = "/pdfs/#{@document.title.parameterize.underscore}/#{@document.title}.pdf" # /mnt/qdrive/LSYS/vol02/Testing/PDF/"
+    @document.download_path = "/pdfs/#{@document.title.parameterize.underscore}/#{@document.title.gsub(' ','_')}.pdf"
+    # Check DPI of images
+    # byebug
+    Dir.foreach(source_folder) do |filename|
+      next if filename == '.' or filename == '..' or filename.exclude?('.tif') # Dir.foreach includes these "file names" but we don't want them
+      magick = MiniMagick::Image.open("#{source_folder}/#{filename}")
+      dpi = magick.resolution[0]
+      if dpi < 600
+        warnings_list.push(filename)
+      end
+    end
 
+    unless warnings_list.empty?
+      if warnings_list.include?(spaces_warning)
+        @warning_message = [spaces_warning]
+        if warnings_list.length > 1
+          @warning_message.push("These images are under 600 DPI: #{warnings_list[1...warnings_list.length].join(',')}. Continuing...")
+        end
+      elsif warnings_list.length > 1
+        @warning_message = "These images are under 600 DPI: #{warnings_list.join(',')}. Continuing..."
+      end
+    end
 
     respond_to do |format|
       if @document.save
         format.html {
-          redirect_to @document, notice: "Zoidberg is processing your files in the background and will email you when the PDF is done."
-          CreatePdfJob.perform_later(@document.title, source_folder)
+          flash[:success] = "Zoidberg is processing your files in the background and will email you when the PDF is done."
+          if @warning_message.present?
+            if @warning_message.count > 1
+              flash[:warning] = @warning_message
+            else
+              flash[:warning] = @warning_message[0]
+            end
+          end
+          #byebug
+          redirect_to @document
+
+          if @document.title.include?(" ")
+            CreatePdfJob.perform_later(@document.title.gsub(" ","_"), source_folder, @document.id)
+          else
+            CreatePdfJob.perform_later(@document.title, source_folder, @document.id)
+          end
         }
         format.json { render :show, status: :created, location: @document }
       else
@@ -96,78 +136,16 @@ class DocumentsController < ApplicationController
 
   private
 
-    def resample_and_convert(filename, working_dir)
-      # Check and print DPI of TIF image
-      magick = MiniMagick::Image.open(filename)
-      dpi = magick.resolution[0]
-      case dpi
-        when 600
-          puts "Image is 600 DPI. Continuing..."
-          tif_to_jpg(filename, working_dir)
-        when 0..600
-          puts "Warning: image is less than 600 DPI. Continuing..."
-          tif_to_jpg(filename, working_dir)
-        else
-          puts "Image DPI is over 600. Resampling to 600 DPI..."
-          MiniMagick::Tool::Magick::Convert.new do |convert|
-            convert << filename
-            convert.merge! ["-resample", "600"]
-            path = convert << "#{working_dir}/#{File.basename(filename, ".tif")}.jpg"
-          end
-        path
-        end
-    end
-
-    def tif_to_jpg(tif, working_dir)
-      dest_path = "#{working_dir}/#{File.basename(tif, ".tif")}.jpg"
-      MiniMagick::Tool::Magick::Convert.new do |convert|
-        convert << tif
-        convert.format "jpg"
-        convert << dest_path
-      end
-      return dest_path
-    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_document
       @document = Document.find(params[:id])
     end
 
-    def jpgs_to_pdf(profile_id, working_dir)
-      puts "Converting to pdf"
-      files = File.join(working_dir,"*.jpg")
-      # Returns an array of every jpg file in working_dir, => ['../working/.../img001.jpg',...]
-      jpg_array = Dir.glob(files).sort
-      doc = HexaPDF::Document.new
-      # Create a PDF document with images
-      jpg_array.each do |jpg|
-        image = doc.images.add(jpg)
-        width = image.info.width
-        height = image.info.height
-        page = doc.pages.add([0, 0, width, height])
-        page.canvas.image(image, at: [0,0], width: width, height: height)
-      end
-      doc.write("/home/tjychan/zoidberg/pdfs/combined.pdf") #optimize: true by default
-      save_thumbnail(jpg_array.first, profile_id)
-      # cleanup jpgs
-      FileUtils.rm_rf(working_dir)
-      # jpg_array.each do |jpg|
-      #   File.delete(jpg)
-      # end
-    end
-
-    def save_thumbnail(first_jpg, profile_id)
-      thumbnail = MiniMagick::Image.open(first_jpg).resize "400x400"
-      dest_dir = "/home/tjychan/zoidberg/public/uploads/documents/#{profile_id}"
-      unless File.directory?(dest_dir) # Create a dir if it doesn't already exist
-        FileUtils.mkdir_p(dest_dir)
-      end
-      path_to_thumb = "#{dest_dir}/thumb.jpg"
-      thumbnail.write path_to_thumb
-    end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def document_params
       params.require(:document).permit(:title, :download_path, :source_path, :email)
     end
+
 end

@@ -1,12 +1,11 @@
 class Document < ApplicationRecord
   belongs_to :profile
-
-  # Allow document to read email attribute (passed in by documents/_form.html.erb)
-  # without saving it to the model
-  # attr_accessible :email
+  
+  validates :email, presence: true
+  validates :title, uniqueness: true
 
   def thumbnail_url
-     "/pdfs/#{snake_case(self.title)}/#{self.title}_thumb.jpg"
+     "/pdfs/#{snake_case(self.title)}/#{self.title.gsub(' ','_')}_thumb.jpg"
   end
 
   def permalink
