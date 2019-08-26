@@ -47,7 +47,7 @@ class DocumentsController < ApplicationController
     else
       @document.title = File.basename(params[:document][:original_filename], '.tif')
     end
-    # To Do: set profile ID based on the current session
+    # Defunct. Originally planned to associate document with a user profile.
     @document.profile_id = 5
     # Pull from the mounted Q:Drive
     source_folder = @document.source_path.gsub("\\","/").gsub('Q:','/mnt/qdrive')
