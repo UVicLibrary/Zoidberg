@@ -16,7 +16,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-lg-12">
-              <a href="#" class="btn" id="menu-toggle"><%= octicon "three-bars", height: 32, class: "right left" %></a>
+              <!-- <a href="#" class="btn" id="menu-toggle"><%#= octicon "three-bars", height: 32, class: "right left" %></a> -->
               <% flash.each do |key, value| %>
               <div class="alert alert-<%= key %>">
                 <% if key == "warning" && value.is_a?(Array) && value.count > 1 %> <%# Warning messages for documents#create %>
@@ -35,13 +35,13 @@
     </div>
   </body>
 
-  <script>
+  <!-- <script>
     $(document).ready(function(){
     $("#menu-toggle").click(function(e){
       e.preventDefault();
       $("#wrapper").toggleClass("menuDisplayed");
     });
   });
-  </script>
+  </script> -->
 
 </html>

@@ -5,7 +5,11 @@ class PdfCreatedMailer < ApplicationMailer
     @host = params[:account_host]
     @url = "#{ENV['BASE_URL']}/documents/#{@document.id}"
 
-    mail(to: @document.email, subject: "#{@document.title.titleize} is Ready")
+    mail(to: @document.email, subject: "#{@document.title.titleize} is Ready") do |format|
+      format.html
+      format.text
+    end
+
   end
 
 end

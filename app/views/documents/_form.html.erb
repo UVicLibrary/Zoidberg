@@ -17,7 +17,7 @@
 
   <div class="form-group">
     <%= label_tag(:source_path, "Folder", class: "mr-sm-4 font-weight-bold") %>
-    <p>Zoidberg will make a PDF of all the .tifs in this folder. <a href="#" class="text-info">How to get a file path without typing?</a></p>
+    <p>Zoidberg will make a PDF of all the .tifs in this folder. <a href="#" class="text-info" data-toggle="modal" data-target="#exampleModal">How to get a file path without typing?</a></p>
     <%= form.text_field :source_path, class: "form-control col-md-11", placeholder: "File path to folder (Q:)", id: "source-path" %>
     <small class="form-text text-muted mb-sm-4">
         Zoidberg will use only .tif files and ignore other file extensions.
@@ -38,3 +38,27 @@
     <%= form.submit 'Create Document', class: "btn btn-primary", id: "create-document-button" %>
   </div>
 <% end %>
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button> -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-large" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Getting file paths from Q:\</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= image_tag('path_docs_bigger.gif') %>
+      </div>
+      <!-- <div class="modal-footer">
+      </div> -->
+    </div>
+  </div>
+</div>

@@ -10,14 +10,13 @@ class DocumentsController < ApplicationController
   # GET /documents
   # GET /documents.json
   def index
-    @documents = Document.all
+    @documents = Document.all.sort_by(&:created_at).reverse # Sort by reverse chronological order
   end
 
   # GET /documents/1
   # GET /documents/1.json
   def show
-    # flash[:success] = "This is a test"
-    # flash[:warning] = ["String 1", "String 2"].join('<br/>').html_safe
+
   end
 
   # GET /documents/new
