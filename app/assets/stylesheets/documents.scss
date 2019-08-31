@@ -2,6 +2,81 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+
+
+#full-path {
+  font-weight: 600;
+}
+
+/* Similar to alert-primary styles: https://getbootstrap.com/docs/4.3/components/alerts/ */
+.folder-link:hover {
+  background-color: #cce5ff;
+  color: #002752;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  border-color: #b8daff;
+  padding: .25rem 0.75rem;
+  font-weight: 600;
+}
+
+.subfolder-link {
+  color: #026bdb;
+}
+
+.subfolder-link:hover {
+  color: #002752;
+  text-decoration: none;
+}
+
+
+/* Previous button */
+.subfolder-link + form, .folder-link > form {
+  display: inline-block;
+  @include float-right;
+}
+
+#folder-picker-desc {
+  display: inline-block;
+}
+
+#folders-list {
+  list-style: none;
+  padding-left: inherit;
+}
+
+.folder-name {
+  display: inline-block;
+  text-decoration: none;
+  background-color: transparent;
+  // font-weight: 700;
+  // font-size: 1.2rem;
+}
+
+.folder-link {
+  //color: #17a2b8;
+  display: inline-block;
+  vertical-align: middle;
+  list-style: none;
+  width: 100%;
+  // padding-right: 1rem;
+}
+
+.folder-icon {
+  width: 38px;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.folder-icon path {
+  fill: #007bff;
+}
+
+// .folder-name::before {
+//   content: url('openfilebutton.svg');
+// }
+
+// For documents/PDFs that are still processing
+
 .large-progress-badge {
   font-size: 100% !important;
 }
@@ -15,7 +90,7 @@
 }
 
 .modal-large {
-  max-width: 60% !important;
+  max-width: 60%;
 }
 
 // Loading animation

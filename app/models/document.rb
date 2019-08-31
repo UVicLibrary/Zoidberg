@@ -1,8 +1,11 @@
 class Document < ApplicationRecord
   belongs_to :profile
-  
+
   validates :email, presence: true
   validates :title, uniqueness: true
+
+  mount_uploaders :source_files, SourceFilesUploader
+  serialize :source_files, JSON
 
   def thumbnail_url
      "/pdfs/#{snake_case(self.title)}/#{self.title.gsub(' ','_')}_thumb.jpg"

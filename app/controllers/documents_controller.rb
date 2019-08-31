@@ -22,6 +22,45 @@ class DocumentsController < ApplicationController
   # GET /documents/new
   def new
     @document = Document.new
+    # if params[:expand_folder]
+      # Get the folders *contained inside* the folder named in params[:expand_folder]
+    # elsif Last folder in session
+    # else
+      @current_folder = File.join("/mnt","qdrive","Digitization")
+      @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort
+    # end
+
+    # respond_to do |format|
+    #   format.html
+    #   format.js {
+    #     byebug
+    #     # render partial: 'folder_picker' #Add some param current_folder
+    #   }
+    # end
+
+  end
+
+  def refresh_folder_picker
+
+      if params[:expand_folder] == "parent" # Go up one level
+        @current_folder = File.expand_path("..", params[:current_folder])
+        @folders = get_subfolders(@current_folder)
+      else # Go down one level
+        @current_folder = File.join(params[:current_folder], params[:expand_folder])
+        # List all the folders in the selected folder
+        @folders = get_subfolders(@current_folder)
+      end
+
+      respond_to do |format|
+        format.js {
+          render partial: 'refresh_folder_picker'
+        }
+      end
+
+  end
+
+  def get_subfolders(folder)
+    Dir.entries(folder).select {|entry| File.directory?(File.join(folder, entry)) and !(entry =='.' || entry == '..') }.sort
   end
 
   # GET /documents/1/edit
@@ -34,10 +73,11 @@ class DocumentsController < ApplicationController
     warnings_list = []
     @document = Document.new(document_params)
     if params[:document][:title].present?
+      timestamp = "_#{DateTime.now.strftime("%s")}"
       if @document.title.include?(".pdf")
-        @document.title = File.basename(params[:document][:title],".pdf")
+        @document.title = File.basename(params[:document][:title],".pdf") + timestamp
       else
-        @document.title = params[:document][:title]
+        @document.title = params[:document][:title] + timestamp
       end
       if @document.title.include?(" ")
         spaces_warning = "There are spaces in the title. They will be converted to underscores in the file name. Continuing..."
@@ -45,7 +85,7 @@ class DocumentsController < ApplicationController
         warnings_list.push(spaces_warning)
       end
     else
-      @document.title = File.basename(params[:document][:original_filename], '.tif')
+      @document.title = File.basename(params[:document][:original_filename], '.tif') + timestamp
     end
     # Defunct. Originally planned to associate document with a user profile.
     @document.profile_id = 5
@@ -53,16 +93,16 @@ class DocumentsController < ApplicationController
     source_folder = @document.source_path.gsub("\\","/").gsub('Q:','/mnt/qdrive')
     # For displaying download to user
     @document.download_path = "/pdfs/#{@document.title.parameterize.underscore}/#{@document.title.gsub(' ','_')}.pdf"
+
     # Check DPI of images
-    # byebug
-    Dir.foreach(source_folder) do |filename|
-      next if filename == '.' or filename == '..' or filename.exclude?('.tif') # Dir.foreach includes these "file names" but we don't want them
-      magick = MiniMagick::Image.open("#{source_folder}/#{filename}")
-      dpi = magick.resolution[0]
-      if dpi < 600
-        warnings_list.push(filename)
-      end
-    end
+    # Dir.foreach(source_folder) do |filename|
+    #   next if filename == '.' or filename == '..' or filename.exclude?('.tif') # Dir.foreach includes these "file names" but we don't want them
+    #   magick = MiniMagick::Image.open("#{source_folder}/#{filename}")
+    #   dpi = magick.resolution[0]
+    #   if dpi < 600
+    #     warnings_list.push(filename)
+    #   end
+    # end
 
     unless warnings_list.empty?
       if warnings_list.include?(spaces_warning)
@@ -86,13 +126,13 @@ class DocumentsController < ApplicationController
               flash[:warning] = @warning_message[0]
             end
           end
-          #byebug
+
           redirect_to @document
 
           if @document.title.include?(" ")
-            CreatePdfJob.perform_later(@document.title.gsub(" ","_"), source_folder, @document.id)
+            # CreatePdfJob.perform_later(@document.title.gsub(" ","_"), source_folder, @document.id)
           else
-            CreatePdfJob.perform_later(@document.title, source_folder, @document.id)
+            # CreatePdfJob.perform_later(@document.title, source_folder, @document.id)
           end
         }
         format.json { render :show, status: :created, location: @document }
@@ -144,7 +184,7 @@ class DocumentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def document_params
-      params.require(:document).permit(:title, :download_path, :source_path, :email)
+      params.require(:document).permit(:title, :download_path, :source_path, :email, {source_files: []})
     end
 
 end

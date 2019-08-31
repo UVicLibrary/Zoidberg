@@ -1,0 +1,75 @@
+<% unless @current_folder == "/mnt/qdrive/Digitization" %>
+  <%# display the current folder path as Folder > Subfolder > Sub-subfolder %>
+  <p id="full-path" class="ml-3"><%= @current_folder.delete_prefix("/mnt/qdrive/").split("/").join(" > ") %></p>
+<% end %>
+  <ul id="folders-list">
+    <% @folders.each do |folder| %>
+        <% folder_contents = Dir.entries(File.join(@current_folder, folder)).reject { |entry| entry == "." || entry == ".." } %>
+        <% if folder_contents.any? { |entry| File.directory?(File.join(@current_folder, folder, entry)) } %>
+              <li class="folder-link">
+                <%= link_to folder_picker_path(expand_folder: folder, current_folder: @current_folder), method: :post, remote: true,
+                  class: "subfolder-link" do %>
+                    <img src="/assets/openfilebutton.svg" class="folder-icon" />
+                    <span class="folder-name ml-2"><%= folder %></span>
+                <% end %>
+                <%= button_to "Previous", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
+                class: "btn btn-light previous-button mt-2" %>
+              </li>
+        <% else %>
+            <li class="folder-link">
+              <img src="/assets/openfilebutton.svg" class="folder-icon mb-2" />
+              <span class="folder-name ml-2"><%= folder %></span>
+              <%= button_to "Previous", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
+              class: "btn btn-light previous-button mt-2" %>
+            </li>
+        <% end %>
+        <br />
+    <% end %>
+  </ul>
+
+
+<script>
+
+  // $(document).on('turbolinks:load', function() {
+
+    // var folders = <%#= raw(@folders) %>;
+    // var foldersList = document.getElementById("folders-list");
+    //
+    // for (let i=0; i<folders.length; i++) {
+    //
+    //   let folderName = document.createElement('span');
+    //   folderName.className = "folder-name ml-2";
+    //   folderName.innerHTML = folders[i];
+    //
+    //   let folderImage = document.createElement('img');
+    //   folderImage.src = "/assets/openfilebutton.svg";
+    //   folderImage.className = "folder-icon mb-2";
+    //
+    //   let folderLink = document.createElement('li');
+    //   folderLink.className = "folder-link";
+    //
+    //   let br = document.createElement('br');
+    //
+    //   folderLink.appendChild(folderImage);
+    //   folderLink.appendChild(folderName);
+    //   foldersList.appendChild(folderLink);
+    //   foldersList.appendChild(br);
+    //
+    // };
+
+    // $('#folders-list').on('click', '.folder-link', function() {
+    //   clickedFolder = $(this).find('.folder-name').html();
+    //   console.log(clickedFolder);
+    // });
+
+    // $('#folders-list').on( 'click', '.folder-link', function() {
+    //   clickedFolder = $(this).find('.folder-name').html();
+    // });
+
+    // $('.folder-link').click(function() {
+    //   clickedFolder = $(this).children('.folder-name').html();
+    // });
+
+  // });
+
+</script>

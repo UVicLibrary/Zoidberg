@@ -31,6 +31,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'mini_magick', '~> 4.9.5'
 gem 'hexapdf'
 gem 'carrierwave'
+# gem 'green_shoes'
 
 # Icons (Bootstrap 4 does not support glyphicons)
 gem 'octicons'
