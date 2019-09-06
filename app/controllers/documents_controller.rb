@@ -90,7 +90,7 @@ class DocumentsController < ApplicationController
     # Defunct. Originally planned to associate document with a user profile.
     @document.profile_id = 5
     # Pull from the mounted Q:Drive
-    source_folder = @document.source_path.gsub("\\","/").gsub('Q:','/mnt/qdrive')
+    source_folder = @document.source_path
     # For displaying download to user
     @document.download_path = "/pdfs/#{@document.title.parameterize.underscore}/#{@document.title.gsub(' ','_')}.pdf"
 

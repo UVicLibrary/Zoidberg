@@ -1,26 +1,51 @@
+<div id="modal-overlay">
+    <div class="col-md-4 offset-md-4 text-center" id="modal-overlay-contents">
+        <div class="sk-fading-circle">
+          <div class="sk-circle1 sk-circle"></div>
+          <div class="sk-circle2 sk-circle"></div>
+          <div class="sk-circle3 sk-circle"></div>
+          <div class="sk-circle4 sk-circle"></div>
+          <div class="sk-circle5 sk-circle"></div>
+          <div class="sk-circle6 sk-circle"></div>
+          <div class="sk-circle7 sk-circle"></div>
+          <div class="sk-circle8 sk-circle"></div>
+          <div class="sk-circle9 sk-circle"></div>
+          <div class="sk-circle10 sk-circle"></div>
+          <div class="sk-circle11 sk-circle"></div>
+          <div class="sk-circle12 sk-circle"></div>
+        </div>
+      <p id="modal-overlay-message"><strong>Loading folders...</strong></p>
+    </div>
+</div>
 <% unless @current_folder == "/mnt/qdrive/Digitization" %>
   <%# display the current folder path as Folder > Subfolder > Sub-subfolder %>
-  <p id="full-path" class="ml-3"><%= @current_folder.delete_prefix("/mnt/qdrive/").split("/").join(" > ") %></p>
+  <p id="full-path" class="ml-3 mr-4 mt-1"><%= @current_folder.delete_prefix("/mnt/qdrive/").split("/").join(" > ") %></p>
+  <button class="btn btn-primary select-folder-button always-display mr-2" id="select-current-button">Select current folder</button>
+  <%= button_to "Go Back", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
+  class: "btn btn-light back-button always-display" %>
 <% end %>
   <ul id="folders-list">
     <% @folders.each do |folder| %>
         <% folder_contents = Dir.entries(File.join(@current_folder, folder)).reject { |entry| entry == "." || entry == ".." } %>
+        <%# Checks if folder is expandable (i.e. if it contains any folders) %>
         <% if folder_contents.any? { |entry| File.directory?(File.join(@current_folder, folder, entry)) } %>
               <li class="folder-link">
                 <%= link_to folder_picker_path(expand_folder: folder, current_folder: @current_folder), method: :post, remote: true,
                   class: "subfolder-link" do %>
-                    <img src="/assets/openfilebutton.svg" class="folder-icon" />
+                    <img src="/assets/folder-svgrepo-com.svg" class="folder-icon" />
                     <span class="folder-name ml-2"><%= folder %></span>
                 <% end %>
-                <%= button_to "Previous", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
-                class: "btn btn-light previous-button mt-2" %>
+                <%= button_to "Go Back", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
+                class: "btn btn-light back-button mt-2" %>
+                <button class="btn btn-primary select-folder-button mt-2 mr-2">Select</button>
               </li>
         <% else %>
             <li class="folder-link">
-              <img src="/assets/openfilebutton.svg" class="folder-icon mb-2" />
+              <img src="/assets/folder-svgrepo-com.svg" class="folder-icon mb-2" />
               <span class="folder-name ml-2"><%= folder %></span>
-              <%= button_to "Previous", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
-              class: "btn btn-light previous-button mt-2" %>
+              <%= button_to "Go Back", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
+              class: "btn btn-light back-button mt-2" %>
+              <button class="btn btn-primary select-folder-button mt-2 mr-2">Select</button>
             </li>
         <% end %>
         <br />
@@ -30,46 +55,46 @@
 
 <script>
 
-  // $(document).on('turbolinks:load', function() {
+    // Update the source_path field with the the selected folder's value
+    $('.folder-picker-container').on('click', '.select-folder-button', function() {
 
-    // var folders = <%#= raw(@folders) %>;
-    // var foldersList = document.getElementById("folders-list");
-    //
-    // for (let i=0; i<folders.length; i++) {
-    //
-    //   let folderName = document.createElement('span');
-    //   folderName.className = "folder-name ml-2";
-    //   folderName.innerHTML = folders[i];
-    //
-    //   let folderImage = document.createElement('img');
-    //   folderImage.src = "/assets/openfilebutton.svg";
-    //   folderImage.className = "folder-icon mb-2";
-    //
-    //   let folderLink = document.createElement('li');
-    //   folderLink.className = "folder-link";
-    //
-    //   let br = document.createElement('br');
-    //
-    //   folderLink.appendChild(folderImage);
-    //   folderLink.appendChild(folderName);
-    //   foldersList.appendChild(folderLink);
-    //   foldersList.appendChild(br);
-    //
-    // };
+      if (this.id == 'select-current-button') {
+        $('#source-path').val('<%= @current_folder %>');
+        folders = '<%= @current_folder %>'.split('/')
+        var selectedFolder = folders[folders.length -1]
+      }
+      else {
+        var pathPrefix = '<%= @current_folder %>';
+        var clicked = $(this);
+        var selectedFolder = clicked.parent('.folder-link').find('.folder-name').html();
+        // Fill in the source-path form with the full file path
+        $('#source-path').val(pathPrefix + '/' + selectedFolder);
+      }
+      // Close the modal
+      $('#exampleModal').modal('hide');
+      // Fill in a separate form element with the folder picked
+      $('#selected-file').val(selectedFolder);
+    });
 
-    // $('#folders-list').on('click', '.folder-link', function() {
-    //   clickedFolder = $(this).find('.folder-name').html();
-    //   console.log(clickedFolder);
-    // });
+    // Only show Select and Go Back buttons when mouse is on a folder name
+    $('.folder-link').hover(
+    function() {
+      var backButton = $(this).find('.back-button');
+      var selectButton = $(this).find('.select-folder-button');
+      backButton.show();
+      selectButton.show();
+    },
+    function() {
+      var backButton = $(this).find('.back-button');
+      var selectButton = $(this).find('.select-folder-button');
+      backButton.hide();
+      selectButton.hide();
+    }
+    );
 
-    // $('#folders-list').on( 'click', '.folder-link', function() {
-    //   clickedFolder = $(this).find('.folder-name').html();
-    // });
-
-    // $('.folder-link').click(function() {
-    //   clickedFolder = $(this).children('.folder-name').html();
-    // });
-
-  // });
+    // Modal overlay
+    $('.subfolder-link').click( function() {
+      $('#modal-overlay').css('display','block');
+    });
 
 </script>

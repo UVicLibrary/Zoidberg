@@ -3,9 +3,32 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 
+#selected-file {
+  display: inline-block;
+}
+
+#select-current-button, .folder-picker-container > form {
+  @include float-left;
+}
+
+.always-display {
+  display: inline-block !important;
+}
+
+.select-folder-button, .back-button {
+  display: none;
+  @include float-right;
+}
+
+// /* Prevent back button from forcing new line */
+.subfolder-link + form, .folder-link > form {
+  @include float-right;
+}
 
 #full-path {
   font-weight: 600;
+  display: inline-block;
+  @include float-left;
 }
 
 /* Similar to alert-primary styles: https://getbootstrap.com/docs/4.3/components/alerts/ */
@@ -28,12 +51,6 @@
   text-decoration: none;
 }
 
-
-/* Previous button */
-.subfolder-link + form, .folder-link > form {
-  display: inline-block;
-  @include float-right;
-}
 
 #folder-picker-desc {
   display: inline-block;
@@ -62,7 +79,7 @@
 }
 
 .folder-icon {
-  width: 38px;
+  width: 35px;
   padding-bottom: 0.5rem;
   padding-top: 0.5rem;
 }
@@ -106,7 +123,19 @@
   display: none;
 }
 
-#overlay-contents {
+#modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+  background-color: rgba(255,255,255,0.5);
+  display: none;
+}
+
+
+#overlay-contents, #modal-overlay-contents {
   top: 30%;
   position: fixed;
   background-color: white;

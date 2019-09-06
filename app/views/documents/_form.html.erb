@@ -12,16 +12,18 @@
 
   <div class="form-group">
     <%= label_tag(:title, "Filename for resulting PDF", class: "mr-sm-4 font-weight-bold") %>
-    <%= form.text_field :title, class: "form-control col-md-6", placeholder: "Enter document title", id: "title" %>
+    <%= form.text_field :title, class: "form-control col-md-8", placeholder: "Enter document title", id: "title" %>
   </div>
 
   <div class="form-group">
     <%= label_tag(:source_path, "Folder", class: "mr-sm-4 font-weight-bold") %>
-    <p>Zoidberg will make a PDF of all the .tifs in this folder. <a href="#" class="text-info" data-toggle="modal" data-target="#filePathModal">How to get a file path without typing?</a></p>
-    <%= form.text_field :source_path, class: "form-control col-md-11", placeholder: "File path to folder (Q:)", id: "source-path" %>
-    <small class="form-text text-muted mb-sm-4">
-        Zoidberg will use only .tif files and ignore other file extensions.
-    </small>
+    <p>Zoidberg will make a PDF of all the TIF(F)s in this folder and ignore other file extensions.</p>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="folder-picker">
+      Select a folder
+    </button>
+    <input class="form-control-plaintext col-md-8" id="selected-file" type="text" placeholder="No folder selected" readonly>
+    <%= form.hidden_field :source_path, class: "form-control col-md-11", placeholder: "File path to folder (Q:)", id: "source-path" %>
   </div>
 
   <div class="form-group">
@@ -34,44 +36,12 @@
     </small>
   </div>
 
-  <div class="form-group">
-    <%= label_tag(:source_folders, "Folder of Images", class: "mr-sm-4 font-weight-bold") %>
-    <%#= form.file_field :source_files, multiple: true %>
-    <!-- <input multiple="multiple" type="file" id="filepicker" name="document[source_files][]" webkitdirectory multiple /> -->
-    <input type="file" id="filepicker" name="fileList" webkitdirectory multiple />
-    <ul id="listing"></ul>
-  </div>
-
   <div class="col-md-12 text-center btn-row">
-    <%= form.submit 'Create Document', class: "btn btn-primary", id: "create-document-button" %>
+    <%= form.submit 'Create Document', class: "btn btn-success", id: "create-document-button" %>
   </div>
 <% end %>
 
-<!-- Modal -->
-<div class="modal fade" id="filePathModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-large" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Getting file paths from Q:\</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <%= image_tag('path_docs_bigger.gif') %>
-      </div>
-      <!-- <div class="modal-footer">
-      </div> -->
-    </div>
-  </div>
-</div>
 
-
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="folder-picker">
-  Select a folder
-</button>
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -84,7 +54,7 @@
         </button>
       </div>
       <div class="modal-body">
-          <span class="ml-3 mb-2" id="folder-picker-desc">Click on a folder name to expand or hover for more options.</span>
+          <span class="mb-2" id="folder-picker-desc">Click on a folder name to expand it, or hover over it for more options.</span>
           <div class="folder-picker-container">
             <%= render 'folder_picker' %>
           </div>
@@ -93,14 +63,6 @@
   </div>
 </div>
 
-
-<!-- $.ajax({
-        url: "/<some_route>?latitude="+latitude+"&longitude"+longitude,
-        success: function(data) {
-            // do something here like for example replace some arbitrary container's html with the stuff returned by server.
-            $("#container").html(data);
-        }
-    }); -->
 
 <script type="text/javascript">
 
