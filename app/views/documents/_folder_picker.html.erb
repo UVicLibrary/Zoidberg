@@ -17,15 +17,22 @@
       <p id="modal-overlay-message"><strong>Loading folders...</strong></p>
     </div>
 </div>
-<% unless @current_folder == "/mnt/qdrive" %><%# "/mnt/qdrive/Digitization" %>
-  <%# display the current folder path as Folder > Subfolder > Sub-subfolder %>
-  <p id="full-path" class="ml-3 mr-4 mt-1"><%= @current_folder.delete_prefix("/mnt/qdrive/").split("/").join(" > ") if @current_folder %></p>
-  <button class="btn btn-primary select-folder-button always-display mr-2" id="select-current-button">Select current folder</button>
-  <%= button_to "Go Back", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
-  class: "btn btn-light back-button always-display" %>
-<% end %>
+  <% if @current_folder.blank? %><%# Happens after validation errors %>
+    <% if @document.source_path.present? %>
+      <% @current_folder = @document.source_path %>
+    <% else %>
+      <% @current_folder = "/mnt/qdrive/Digitization" %>
+    <% end %>
+    <% @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort %>
+  <% end %>
+  <% unless @current_folder == "/mnt/qdrive/Digitization" %>
+    <%# display the current folder path as Folder > Subfolder > Sub-subfolder %>
+    <p id="full-path" class="ml-3 mr-4 mt-1"><%= @current_folder.delete_prefix("/mnt/qdrive/").split("/").join(" > ") %></p>
+    <button class="btn btn-primary select-folder-button always-display mr-2" id="select-current-button">Select current folder</button>
+    <%= button_to "Go Back", folder_picker_path(expand_folder: "parent", current_folder: @current_folder), method: :post, remote: true,
+    class: "btn btn-light back-button always-display" %>
+  <% end %>
   <ul id="folders-list">
-    <% if @folders %>
     <% @folders.each do |folder| %>
         <% folder_contents = Dir.entries(File.join(@current_folder, folder)).reject { |entry| entry == "." || entry == ".." } %>
         <%# Checks if folder is expandable (i.e. if it contains any folders) %>
@@ -50,7 +57,6 @@
             </li>
         <% end %>
         <br />
-    <% end %>
     <% end %>
   </ul>
 

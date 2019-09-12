@@ -5,7 +5,6 @@ class CreatePdfJob < ApplicationJob
   # title is a string with the document name
   # source_folder is a path to folder on Q:Drive
   def perform(title, source_folder, document_id)
-    # Check for duplicate folder name?
     working_dir = FileUtils.mkdir_p("/home/tjychan/zoidberg/working/#{snake_case(source_folder.split('/').last)}").first
     dest_file = Rails.root.join("public", "pdfs", "#{snake_case(title)}", "#{title}.pdf" )  # "/mnt/qdrive/LSYS/vol02/Testing/PDF/""
 

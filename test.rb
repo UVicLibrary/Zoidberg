@@ -1,1 +1,0 @@
-folder = 'tif_bunch'

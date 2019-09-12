@@ -3,7 +3,6 @@ class DocumentsController < ApplicationController
   require 'mini_magick' # https://github.com/minimagick/minimagick
   require 'hexapdf' # https://github.com/gettalong/hexapdf
   require 'fileutils'
-  require 'byebug'
 
   before_action :set_document, only: [:show, :edit, :update, :destroy]
 
@@ -23,13 +22,12 @@ class DocumentsController < ApplicationController
   def new
     @document = Document.new
 
-      @current_folder = File.join("/mnt","qdrive") # "/Digitization"
-      @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort
+    @current_folder = File.join("/mnt","qdrive","/Digitization")
+    @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort
 
   end
 
   def refresh_folder_picker
-
       if params[:expand_folder] == "parent" # Go up one level
         @current_folder = File.expand_path("..", params[:current_folder])
         @folders = get_subfolders(@current_folder)
@@ -44,7 +42,6 @@ class DocumentsController < ApplicationController
           render partial: 'refresh_folder_picker'
         }
       end
-
   end
 
   def get_subfolders(folder)
@@ -60,7 +57,7 @@ class DocumentsController < ApplicationController
   def create
     warnings_list = []
     @document = Document.new(document_params)
-    if params[:document][:title].present?
+    # if params[:document][:title].present?
       timestamp = "_#{DateTime.now.strftime("%s")}"
       if @document.title.include?(".pdf")
         @document.title = File.basename(params[:document][:title],".pdf")
@@ -72,25 +69,26 @@ class DocumentsController < ApplicationController
         puts spaces_warning
         warnings_list.push(spaces_warning)
       end
-    else
-      @document.title = File.basename(params[:document][:original_filename], '.tif')
-    end
+    # else
+      # @document.title = File.basename(params[:document][:original_filename], '.tif')
+    # end
     # Pull from the mounted Q:Drive
     source_folder = @document.source_path
     unique_title = @document.title.gsub(' ','_') + timestamp
     # For displaying download
     @document.download_path = "/pdfs/#{snake_case(unique_title)}/#{unique_title}.pdf"
 
-    # Check DPI of images
-    Dir.foreach(source_folder) do |filename|
-      next if filename == '.' or filename == '..' or filename.exclude?('.tif') # Dir.foreach includes these "file names" but we don't want them
-      magick = MiniMagick::Image.open("#{source_folder}/#{filename}")
+    # Check DPI of the first 5 TIFF files in the folder
+    files = Dir.glob(File.join(source_folder, "*.tif"))[0...10]
+    files.each do |filename|
+      magick = MiniMagick::Image.open(filename)
       dpi = magick.resolution[0]
       if dpi < 600
         warnings_list.push(filename)
       end
     end
 
+    # Generate warning messages and display them to user
     unless warnings_list.empty?
       if warnings_list.include?(spaces_warning)
         @warning_message = [spaces_warning]
@@ -114,13 +112,10 @@ class DocumentsController < ApplicationController
             end
           end
 
+          byebug
           redirect_to @document
+          CreatePdfJob.perform_later(unique_title, source_folder, @document.id)
 
-          if @document.title.include?(" ")
-            CreatePdfJob.perform_later(unique_title, source_folder, @document.id)
-          else
-            CreatePdfJob.perform_later(unique_title, source_folder, @document.id)
-          end
         }
         format.json { render :show, status: :created, location: @document }
       else

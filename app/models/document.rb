@@ -4,14 +4,14 @@ class Document < ApplicationRecord
     with: /.+(@uvic.ca)/, message: "must be a valid @uvic.ca address"
   }
   validates :source_path, presence: true, if: :has_tifs?
-  validates :title, format: {
+  validates :title, presence: true, format: {
     with: /\A[^"']+\z/, message: "can't contain quotation marks"
   }
 
   # Check if it has tifs
   def has_tifs?
     if Dir.glob(File.join(self.source_path, "*.tif")).empty?
-      errors.add(:base, "The selected folder must have TIF files in it")
+      errors.add(:base, "The selected folder does not contain any TIFs")
     end
   end
 
