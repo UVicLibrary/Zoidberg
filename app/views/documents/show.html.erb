@@ -13,7 +13,7 @@
   <div class="col-md-4 offset-md-2">
     <dl>
       <dt class="col-sm-3 mr-sm-2 mb-sm-1">Uploader</dt><dd class="col-sm-9"><%= @document.email %></dd>
-      <dt class="col-sm-5 mr-sm-2 mb-sm-1">Source folder</dt><dd class="col-sm-9"><%= @document.source_path %></dd>
+      <dt class="col-sm-5 mr-sm-2 mb-sm-1">Source folder</dt><dd class="col-sm-12 overflow-auto"><%= @document.qdrive_filepath %></dd>
         <dt class="col-sm-8 mr-sm-2 mb-sm-1">Download permalink</dt>
     <% if @document.completed? %>
         <dd class="col-sm-12" style="word-wrap: break-word"><%= link_to "#{@document.permalink}", @document.download_path %></dd>

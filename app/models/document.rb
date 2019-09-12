@@ -1,22 +1,30 @@
 class Document < ApplicationRecord
-  belongs_to :profile
 
-  validates :email, presence: true
-  validates :title, uniqueness: true
+  validates :email, presence: true, format: { # Contains @uvic.ca
+    with: /.+(@uvic.ca)/, message: "must be a valid @uvic.ca address"
+  }
+  validates :source_path, presence: true, if: :has_tifs?
+  validates :title, format: {
+    with: /\A[^"']+\z/, message: "can't contain quotation marks"
+  }
 
-  mount_uploaders :source_files, SourceFilesUploader
-  serialize :source_files, JSON
+  # Check if it has tifs
+  def has_tifs?
+    if Dir.glob(File.join(self.source_path, "*.tif")).empty?
+      errors.add(:base, "The selected folder must have TIF files in it")
+    end
+  end
 
   def thumbnail_url
-     "/pdfs/#{snake_case(self.title)}/#{self.title.gsub(' ','_')}_thumb.jpg"
+     "/pdfs/#{snake_case(self.download_path.split("/")[-2])}/#{File.basename(self.download_path.split("/")[-1], ".pdf")}_thumb.jpg"
   end
 
   def permalink
     "#{ENV['BASE_URL']}/pdfs/#{snake_case(self.title)}/#{self.title}.pdf"
   end
 
-  def mnt_filepath
-    self.source_path.gsub("\\","/").gsub('Q:','/mnt/qdrive')
+  def qdrive_filepath
+    self.source_path.gsub('/mnt/qdrive','Q:').gsub("/","\\")
   end
 
 private

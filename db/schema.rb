@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_27_223225) do
+ActiveRecord::Schema.define(version: 2019_09_06_232718) do
 
   create_table "documents", force: :cascade do |t|
     t.text "title"
@@ -18,11 +18,9 @@ ActiveRecord::Schema.define(version: 2019_08_27_223225) do
     t.text "source_path"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "profile_id"
     t.string "email"
     t.boolean "completed", default: false
     t.string "source_files"
-    t.index ["profile_id"], name: "index_documents_on_profile_id"
   end
 
   create_table "profiles", force: :cascade do |t|

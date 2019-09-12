@@ -22,21 +22,9 @@ class DocumentsController < ApplicationController
   # GET /documents/new
   def new
     @document = Document.new
-    # if params[:expand_folder]
-      # Get the folders *contained inside* the folder named in params[:expand_folder]
-    # elsif Last folder in session
-    # else
-      @current_folder = File.join("/mnt","qdrive","Digitization")
-      @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort
-    # end
 
-    # respond_to do |format|
-    #   format.html
-    #   format.js {
-    #     byebug
-    #     # render partial: 'folder_picker' #Add some param current_folder
-    #   }
-    # end
+      @current_folder = File.join("/mnt","qdrive") # "/Digitization"
+      @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort
 
   end
 
@@ -75,9 +63,9 @@ class DocumentsController < ApplicationController
     if params[:document][:title].present?
       timestamp = "_#{DateTime.now.strftime("%s")}"
       if @document.title.include?(".pdf")
-        @document.title = File.basename(params[:document][:title],".pdf") + timestamp
+        @document.title = File.basename(params[:document][:title],".pdf")
       else
-        @document.title = params[:document][:title] + timestamp
+        @document.title = params[:document][:title]
       end
       if @document.title.include?(" ")
         spaces_warning = "There are spaces in the title. They will be converted to underscores in the file name. Continuing..."
@@ -85,24 +73,23 @@ class DocumentsController < ApplicationController
         warnings_list.push(spaces_warning)
       end
     else
-      @document.title = File.basename(params[:document][:original_filename], '.tif') + timestamp
+      @document.title = File.basename(params[:document][:original_filename], '.tif')
     end
-    # Defunct. Originally planned to associate document with a user profile.
-    @document.profile_id = 5
     # Pull from the mounted Q:Drive
     source_folder = @document.source_path
-    # For displaying download to user
-    @document.download_path = "/pdfs/#{@document.title.parameterize.underscore}/#{@document.title.gsub(' ','_')}.pdf"
+    unique_title = @document.title.gsub(' ','_') + timestamp
+    # For displaying download
+    @document.download_path = "/pdfs/#{snake_case(unique_title)}/#{unique_title}.pdf"
 
     # Check DPI of images
-    # Dir.foreach(source_folder) do |filename|
-    #   next if filename == '.' or filename == '..' or filename.exclude?('.tif') # Dir.foreach includes these "file names" but we don't want them
-    #   magick = MiniMagick::Image.open("#{source_folder}/#{filename}")
-    #   dpi = magick.resolution[0]
-    #   if dpi < 600
-    #     warnings_list.push(filename)
-    #   end
-    # end
+    Dir.foreach(source_folder) do |filename|
+      next if filename == '.' or filename == '..' or filename.exclude?('.tif') # Dir.foreach includes these "file names" but we don't want them
+      magick = MiniMagick::Image.open("#{source_folder}/#{filename}")
+      dpi = magick.resolution[0]
+      if dpi < 600
+        warnings_list.push(filename)
+      end
+    end
 
     unless warnings_list.empty?
       if warnings_list.include?(spaces_warning)
@@ -130,9 +117,9 @@ class DocumentsController < ApplicationController
           redirect_to @document
 
           if @document.title.include?(" ")
-            # CreatePdfJob.perform_later(@document.title.gsub(" ","_"), source_folder, @document.id)
+            CreatePdfJob.perform_later(unique_title, source_folder, @document.id)
           else
-            # CreatePdfJob.perform_later(@document.title, source_folder, @document.id)
+            CreatePdfJob.perform_later(unique_title, source_folder, @document.id)
           end
         }
         format.json { render :show, status: :created, location: @document }

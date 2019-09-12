@@ -31,6 +31,8 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   config.action_mailer.delivery_method = :smtp
+
+
   config.action_mailer.smtp_settings = {
                 address:              'smtp.uvic.ca',
                 port:                 587,
@@ -39,6 +41,8 @@ Rails.application.configure do
                 #password:             '<password>',
                 authentication:       'plain',
                 enable_starttls_auto: true  }
+
+
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_options = {from: 'no-reply@uvic.ca'}
