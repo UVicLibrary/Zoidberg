@@ -6,6 +6,7 @@
 
 # Ignore pdfs
 /public/pdfs
+/working
 
 # Ignore environment variables
 /config/env_variables.rb

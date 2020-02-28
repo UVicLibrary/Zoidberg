@@ -27,7 +27,9 @@ Rails.application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
+  config.assets.compile = true
+  # config.assets.precompile = ['*.js', '*.css', '*.scss']
+  config.assets.precompile += %w( *.js ^[^_]*.css *.css.erb 'folder-svgrepo-com.svg' )
 
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
@@ -64,6 +66,19 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "digiscript_#{Rails.env}"
 
   config.action_mailer.perform_caching = false
+
+  config.action_mailer.default_options = {from: 'no-reply@uvic.ca'}
+
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.smtp_settings = {
+                address:              'smtp.uvic.ca',
+                port:                 587,
+                domain:               'uvic.ca',
+                #user_name:            '<username>',
+                #password:             '<password>',
+                authentication:       'plain',
+                enable_starttls_auto: true  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

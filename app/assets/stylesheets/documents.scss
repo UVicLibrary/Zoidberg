@@ -2,13 +2,17 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.document-card {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 
 #selected-file {
   display: inline-block;
 }
 
 #select-current-button, .folder-picker-container > form {
-  @include float-left;
+  float: left;
 }
 
 .always-display {
@@ -17,18 +21,18 @@
 
 .select-folder-button, .back-button {
   display: none;
-  @include float-right;
+  float: right;
 }
 
 // /* Prevent back button from forcing new line */
 .subfolder-link + form, .folder-link > form {
-  @include float-right;
+  float: right;;
 }
 
 #full-path {
   font-weight: 600;
   display: inline-block;
-  @include float-left;
+  float: left;
 }
 
 .overflow-auto {

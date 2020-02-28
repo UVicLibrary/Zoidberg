@@ -11,7 +11,7 @@
     <div class="row text-lg-left col-lg-10">
     <% if @documents.present? %>
       <% @documents.each do |document| %>
-          <div class="col-lg-3 col-md-4 col-6 mb-4 text-center"><!-- text-align: center -->
+          <div class="col-lg-4 col-md-4 col-6 mb-4 text-center document-card" style="overflow-wrap: normal;"><!-- text-align: center -->
             <%= link_to(document, class: "d-block mb-3 text-dark") do %>
               <% if document.completed? %>
                 <img src="<%= document.thumbnail_url %>" class="document-card-image" />

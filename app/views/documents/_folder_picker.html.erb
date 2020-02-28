@@ -21,11 +21,11 @@
     <% if @document.source_path.present? %>
       <% @current_folder = @document.source_path %>
     <% else %>
-      <% @current_folder = "/mnt/qdrive/Digitization" %>
+      <% @current_folder = "/mnt/qdrive" %>
     <% end %>
     <% @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort %>
   <% end %>
-  <% unless @current_folder == "/mnt/qdrive/Digitization" %>
+  <% unless @current_folder == "/mnt/qdrive" %>
     <%# display the current folder path as Folder > Subfolder > Sub-subfolder %>
     <p id="full-path" class="ml-3 mr-4 mt-1"><%= @current_folder.delete_prefix("/mnt/qdrive/").split("/").join(" > ") %></p>
     <button class="btn btn-primary select-folder-button always-display mr-2" id="select-current-button">Select current folder</button>

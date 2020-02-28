@@ -6,4 +6,8 @@ Rails.application.routes.draw do
 
   root 'documents#new'
   post "documents/new/folder-picker", to: "documents#refresh_folder_picker", as: :folder_picker
+
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
+
 end

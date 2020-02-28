@@ -21,10 +21,8 @@ class DocumentsController < ApplicationController
   # GET /documents/new
   def new
     @document = Document.new
-
-    @current_folder = File.join("/mnt","qdrive","/Digitization")
+    @current_folder = File.join("/mnt","qdrive")
     @folders = Dir.entries(@current_folder).select {|entry| File.directory?(File.join(@current_folder, entry)) and !(entry =='.' || entry == '..') }.sort
-
   end
 
   def refresh_folder_picker
@@ -112,7 +110,6 @@ class DocumentsController < ApplicationController
             end
           end
 
-          byebug
           redirect_to @document
           CreatePdfJob.perform_later(unique_title, source_folder, @document.id)
 
