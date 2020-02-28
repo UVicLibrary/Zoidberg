@@ -138,7 +138,7 @@ GEM
       rails
     popper_js (1.14.5)
     public_suffix (3.1.1)
-    puma (3.12.1)
+    puma (3.12.3)
     rack (2.0.7)
     rack-protection (2.0.7)
       rack
@@ -257,7 +257,7 @@ DEPENDENCIES
   mini_magick (~> 4.9.5)
   octicons
   octicons_helper
-  puma (~> 3.11)
+  puma (~> 3.12)
   rails (~> 5.2.3)
   redis
   sass-rails (~> 5.0)
