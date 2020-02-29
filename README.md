@@ -17,6 +17,7 @@ PDFs are stored in `public/pdfs` directory. Working files are created in `workin
     * Cleans up the working files, which we don't need anymore.
     * Sets the `completed` flag to true (in the document model), which updates `views/documents/show` with a download link to the PDF.
     * Sends an email (`pdf_created_mailer`) to the user email address listed earlier.
+6. Schedules a job to delete the document (files & from database) a week after creation (see `app/workers/delete_document_worker.rb`).
 
 ## Bundled Gems
 * [MiniMagick](https://github.com/minimagick/minimagick)
