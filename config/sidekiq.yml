@@ -3,19 +3,5 @@
 :queues:
   - [default, 5]
   - [event, 2]
-  - mailers
-  - attach_files
-  - characterize
-  - [ingest, 4]
-  - derivatives
-  - batch_create
-  - proxy_deposit
-  - create_work
-  - arkivo_subscription
-  - audit
-  - import_url
-  - [ingest_local, 4]
-  - resolrize
-  - permissions
 :verbose: true
 :logfile: /home/zoidberg/zoidberg/log/sidekiq.log
