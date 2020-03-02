@@ -1,10 +1,5 @@
-Sidekiq.configure_server do |config|
-  config.periodic do |mgr|
-    # see any crontab reference for the first argument
-    # e.g. http://www.adminschoice.com/crontab-quick-reference
-    # or   https://crontab.guru/
-    #
-    # Delete tmp image files at 11:00pm every Sunday
-    mgr.register('0 23 * * 0', "DeleteTmpFilesWorker")
-  end
+schedule_file = "config/cron_job_schedule.yml"
+
+if File.exist?(schedule_file) && Sidekiq.server?
+  Sidekiq::Cron::Job.load_from_hash YAML.load_file(schedule_file)
 end
