@@ -94,7 +94,7 @@ class DocumentsController < ApplicationController
           @warning_message.push("These images are under 600 DPI: #{warnings_list[1...warnings_list.length].join(',')}. Continuing...")
         end
       elsif warnings_list.length > 1
-        @warning_message = "These images are under 600 DPI: #{warnings_list.join(',')}. Continuing..."
+        @warning_message = ["These images are under 600 DPI: #{warnings_list.join(',')}. Continuing..."]
       end
     end
 
