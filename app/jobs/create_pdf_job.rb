@@ -1,6 +1,16 @@
 class CreatePdfJob < ApplicationJob
   queue_as :default
 
+  rescue_from(StandardError) do |exception|
+    Rails.logger.error "Zoidberg CreatePDFJob error: #{exception.to_s}"
+    error_message = exception.to_s
+    if error_message.include?("No such file") && error_message.include?("/mnt/qdrive")
+      linux_path = error_message.match(/\/mnt\/qdrive\/(.+)\b/)[1]
+      windows_path = linux_path.gsub('/','\\')
+      FailuresMailer.with(user_email: Document.find(arguments[2]).email, windows_path: windows_path, title: Document.find(arguments[2]).title).no_such_file.deliver
+    end
+  end
+
 
   # title is a string with the document name
   # source_folder is a path to folder on Q:Drive
@@ -29,7 +39,8 @@ class CreatePdfJob < ApplicationJob
     document.completed = true
     document.save
     PdfCreatedMailer.with(host: ENV['BASE_URL'], document: document).pdf_ready.deliver
-    DeleteDocumentWorker.perform_at(1.weeks.from_now, document.download_path, document_id)
+    # Enqueue delete job. We want to delete the whole dir, not just the document
+    DeleteDocumentWorker.perform_at(DateTime.tomorrow.in_time_zone("Pacific Time (US & Canada)"), document.download_path.split("/")[0...3].join("/"), document_id)
   end
 
   def snake_case(filename)

@@ -7,11 +7,6 @@ class PdfCreatedMailer < ApplicationMailer
 
     mail(to: @document.email, subject: "#{@document.title.titleize} is Ready")
 
-    # mail(to: @document.email, subject: "#{@document.title.titleize} is Ready") do |format|
-    #   format.html
-    #   format.text
-    # end
-
   end
 
 end
