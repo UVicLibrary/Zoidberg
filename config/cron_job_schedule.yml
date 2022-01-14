@@ -1,4 +1,4 @@
 delete_tmp_files_job:
-  cron: "0 23 * * 1"
+  cron: "0 0 0 * * ?"
   class: "DeleteTmpFilesWorker"
   queue: default
